@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Online Examination System - 2026</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --primary: #4e54c8;
+            --secondary: #8f94fb;
+            --accent: #ff6b6b;
+            --success: #2ecc71;
+            --text-dark: #333;
+            --text-light: #666;
+            --bg-light: #f4f6f9;
+            --white: #ffffff;
+            --sidebar-width: 260px;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; }
+        body { background-color: var(--bg-light); color: var(--text-dark); height: 100vh; overflow: hidden; user-select: none; }
+        .hidden { display: none !important; }
+
+        /* --- LANDING PAGE --- */
+        #login-view {
+            height: 100vh; display: flex; align-items: center; justify-content: center;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            position: relative; overflow: hidden; padding: 20px;
+        }
+        .circles { position: absolute; top: 0; left: 0; width: 100%; height: 100%; overflow: hidden; z-index: 1; }
+        .circles li {
+            position: absolute; display: block; list-style: none; width: 20px; height: 20px;
+            background: rgba(255, 255, 255, 0.2); animation: animate 25s linear infinite; bottom: -150px;
+        }
+        @keyframes animate {
+            0%{ transform: translateY(0) rotate(0deg); opacity: 1; border-radius: 0; }
+            100%{ transform: translateY(-1000px) rotate(720deg); opacity: 0; border-radius: 50%; }
+        }
+
+        .login-card {
+            background: rgba(255, 255, 255, 0.95); padding: 40px; border-radius: 20px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.2); width: 100%; max-width: 400px;
+            text-align: center; z-index: 10; animation: slideUp 0.8s ease-out;
+        }
+        @keyframes slideUp { from { opacity: 0; transform: translateY(50px); } to { opacity: 1; transform: translateY(0); } }
+
+        .login-card input {
+            display: block; width: 100%; padding: 14px; margin: 12px 0; 
+            border: 1px solid #ddd; border-radius: 10px; outline: none;
+        }
+        .btn-main {
+            width: 100%; border: none; background: var(--primary); color: white; 
+            padding: 14px; font-weight: bold; cursor: pointer; border-radius: 10px; transition: 0.3s;
+        }
+        .btn-main:hover { background: var(--secondary); transform: scale(1.02); }
+
+        /* --- RESPONSIVE DASHBOARD LAYOUT --- */
+        .dashboard-container { display: flex; height: 100vh; flex-direction: row; }
+        .sidebar { 
+            width: var(--sidebar-width); background: var(--white); 
+            border-right: 1px solid #e0e0e0; padding: 25px; 
+            display: flex; flex-direction: column; flex-shrink: 0;
+        }
+        .main-content { flex: 1; padding: 35px; overflow-y: auto; background: var(--bg-light); position: relative; }
+
+        @media (max-width: 768px) {
+            .dashboard-container { flex-direction: column; }
+            .sidebar { width: 100%; height: auto; border-right: none; border-bottom: 1px solid #e0e0e0; padding: 15px; flex-direction: row; justify-content: space-around; }
+            .logo-area { display: none; }
+            .nav-item { margin-bottom: 0; padding: 8px 12px; font-size: 0.8rem; }
+            .main-content { padding: 20px; }
+        }
+
+        .logo-area { color: var(--primary); font-weight: 700; font-size: 1.4rem; margin-bottom: 40px; }
+        .nav-item { padding: 12px 15px; margin-bottom: 8px; border-radius: 8px; color: var(--text-light); cursor: pointer; transition: 0.3s; }
+        .nav-item:hover, .nav-item.active { background: #eef2ff; color: var(--primary); font-weight: 600; }
+        .card { background: var(--white); padding: 25px; border-radius: 15px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); margin-bottom: 25px; }
+
+        /* --- GLOBAL PROFILE --- */
+        .profile-trigger {
+            position: fixed; bottom: 30px; right: 30px; width: 60px; height: 60px;
+            background: var(--primary); color: white; border-radius: 50%; display: flex;
+            align-items: center; justify-content: center; cursor: pointer; font-weight: bold;
+            box-shadow: 0 6px 15px rgba(0,0,0,0.3); transition: 0.3s; z-index: 2000;
+        }
+        .profile-popover {
+            position: fixed; bottom: 100px; right: 30px; background: white;
+            padding: 25px; border-radius: 15px; box-shadow: 0 15px 35px rgba(0,0,0,0.2);
+            min-width: 250px; z-index: 2001; border: 1px solid #eee;
+        }
+
+        /* --- EXAM INTERFACE --- */
+        #exam-interface { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--white); z-index: 3000; display: flex; flex-direction: column; }
+        .exam-header { padding: 15px 40px; background: var(--primary); color: white; display: flex; justify-content: space-between; align-items: center; }
+        .exam-body-container { flex: 1; padding: 40px; overflow-y: auto; width: 100%; max-width: 1000px; margin: 0 auto; }
+        .question-card { margin-bottom: 40px; border-bottom: 1px solid #eee; padding-bottom: 20px; }
+        
+        /* Grid for options: 2 columns on desktop, 1 on mobile */
+        .options-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; margin-top: 15px; }
+        @media (max-width: 600px) { .options-grid { grid-template-columns: 1fr; } }
+
+        .option-label { 
+            display: flex; align-items: center; padding: 14px; border: 1px solid #ddd; 
+            border-radius: 10px; cursor: pointer; transition: 0.2s; background: #fff;
+        }
+        .option-label:hover { border-color: var(--primary); background: #f8f9ff; }
+        .option-label input { margin-right: 12px; }
+
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        th, td { padding: 15px; text-align: left; border-bottom: 1px solid #eee; }
+        th { background-color: #f8f9fa; color: var(--primary); }
+    </style>
+</head>
+<body oncontextmenu="return false;">
+
+    <section id="login-view">
+        <ul class="circles"><li></li><li></li><li></li><li></li><li></li></ul>
+        <div class="login-card">
+            <h2 style="color: var(--primary); margin-bottom: 10px;">EduExams Portal</h2>
+            <input type="text" id="student-name" placeholder="Full Name" required>
+            <input type="email" id="email" placeholder="Gmail Address (@gmail.com)" required>
+            <input type="password" id="password" placeholder="Password (8+ chars, A, a, 1)" required>
+            <button class="btn-main" onclick="handleAuth()">Enter Portal</button>
+        </div>
+    </section>
+
+    <section id="system-view" class="dashboard-container hidden">
+        <aside class="sidebar">
+            <div class="logo-area">ExamPro</div>
+            <nav style="display: contents;">
+                <div class="nav-item active" id="nav-home" onclick="switchTab('home')">Home</div>
+                <div class="nav-item" id="nav-dashboard" onclick="switchTab('dashboard')">Dashboard</div>
+                <div class="nav-item" id="nav-results" onclick="switchTab('results')">Results</div>
+            </nav>
+        </aside>
+
+        <main class="main-content">
+            <div id="tab-home" class="tab-content">
+                <div class="card">
+                    <h1>Welcome, <span id="welcome-name"></span>!</h1>
+                    <p style="margin: 15px 0; color: #555; line-height: 1.6;">
+                        Please read the following guidelines before starting your assessment:
+                    </p>
+                    <ul style="margin-left: 20px; line-height: 2; color: #555; margin-bottom: 20px;">
+                        <li>Passing marks: <b>Above 35%</b>.</li>
+                        <li>Proctoring enabled: Tab switching is recorded.</li>
+                        <li>Duration: 10 Minutes per exam.</li>
+                    </ul>
+                    <button class="btn-main" style="width: auto; padding: 12px 35px;" onclick="switchTab('dashboard')">Start Examination</button>
+                </div>
+            </div>
+
+            <div id="tab-dashboard" class="tab-content hidden">
+                <h2 style="margin-bottom: 20px;">Select Subject</h2>
+                <div class="card" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
+                    <div><h3>JavaScript</h3><p>5 Qns | 10 Mins</p></div>
+                    <button class="btn-main" style="width: auto; padding: 10px 25px;" onclick="initiateExam('javascript')">Launch</button>
+                </div>
+                <div class="card" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
+                    <div><h3>Python</h3><p>5 Qns | 10 Mins</p></div>
+                    <button class="btn-main" style="width: auto; padding: 10px 25px;" onclick="initiateExam('python')">Launch</button>
+                </div>
+                <div class="card" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
+                    <div><h3>Java Core</h3><p>5 Qns | 10 Mins</p></div>
+                    <button class="btn-main" style="width: auto; padding: 10px 25px;" onclick="initiateExam('java')">Launch</button>
+                </div>
+            </div>
+
+            <div id="tab-results" class="tab-content hidden">
+                <div class="card" style="overflow-x: auto;">
+                    <h3>My Performance</h3>
+                    <table>
+                        <thead>
+                            <tr><th>Subject</th><th>Best Score</th><th>Status</th></tr>
+                        </thead>
+                        <tbody id="scores-table-body"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="profile-trigger" id="profile-init" onclick="toggleProfile()">?</div>
+            <div id="profile-card" class="profile-popover hidden">
+                <div style="text-align: center; margin-bottom: 15px;">
+                    <h4 id="prof-name" style="color: var(--primary);">User</h4>
+                    <p id="prof-email" style="font-size: 0.8rem; color: #888;">email@gmail.com</p>
+                </div>
+                <button class="btn-main" style="padding: 8px; font-size: 0.8rem;" onclick="location.reload()">Logout</button>
+            </div>
+        </main>
+    </section>
+
+    <div id="exam-interface" class="hidden">
+        <div class="exam-header">
+            <div id="subject-title">EXAM</div>
+            <div class="timer-box" id="timer">10:00</div>
+        </div>
+        <div class="exam-body-container">
+            <div id="questions-container"></div>
+        </div>
+        <div style="padding: 20px; background: #f9f9f9; text-align: right; border-top: 1px solid #eee;">
+            <button class="btn-main" style="width: auto; padding: 12px 50px; background: var(--accent);" onclick="submitExam()">Submit Final</button>
+        </div>
+    </div>
+
+    <script>
+        /* --- UNIFORM QUESTION BANK (5 QNS EACH) --- */
+        const examBank = {
+            javascript: [
+                { q: "JS tag?", options: ["<js>", "<script>", "<css>", "<html>"], ans: "<script>" },
+                { q: "Function call?", options: ["f()", "call f", "run f", "f"], ans: "f()" },
+                { q: "Equality?", options: ["=", "==", "===", "both b&c"], ans: "both b&c" },
+                { q: "Variable keyword?", options: ["var", "string", "int", "float"], ans: "var" },
+                { q: "Comment style?", options: ["//", "#", "/*", "--"], ans: "//" }
+            ],
+            python: [
+                { q: "Extension?", options: [".py", ".pt", ".python", ".txt"], ans: ".py" },
+                { q: "Define function?", options: ["def", "func", "function", "define"], ans: "def" },
+                { q: "List type?", options: ["()", "{}", "[]", "<>"], ans: "[]" },
+                { q: "Comment?", options: ["#", "//", "/*", "--"], ans: "#" },
+                { q: "Print command?", options: ["print()", "echo", "printf", "write"], ans: "print()" }
+            ],
+            java: [
+                { q: "Main method?", options: ["main()", "start()", "init()", "run()"], ans: "main()" },
+                { q: "Is OOP?", options: ["Yes", "No", "Depends", "None"], ans: "Yes" },
+                { q: "Inherit keyword?", options: ["extends", "implements", "inherits", "import"], ans: "extends" },
+                { q: "Boolean value?", options: ["true/false", "0/1", "yes/no", "null"], ans: "true/false" },
+                { q: "JVM stands for?", options: ["Java Virtual Machine", "Java Very Much", "Just Virtual Machine", "None"], ans: "Java Virtual Machine" }
+            ]
+        };
+
+        let activeSub = "";
+        let activeQuestions = [];
+        let timer;
+        let userData = { name: "", email: "" };
+
+        function handleAuth() {
+            const name = document.getElementById('student-name').value;
+            const email = document.getElementById('email').value;
+            const pass = document.getElementById('password').value;
+            
+            if(name && email.endsWith("@gmail.com") && /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}$/.test(pass)) {
+                userData = { name, email };
+                document.getElementById('welcome-name').innerText = name;
+                document.getElementById('prof-name').innerText = name;
+                document.getElementById('prof-email').innerText = email;
+                document.getElementById('profile-init').innerText = name.charAt(0).toUpperCase();
+                document.getElementById('login-view').classList.add('hidden');
+                document.getElementById('system-view').classList.remove('hidden');
+                updateTable();
+            } else { alert("Check your details (Name, @gmail.com, Strong Password)."); }
+        }
+
+        function toggleProfile() { document.getElementById('profile-card').classList.toggle('hidden'); }
+
+        function switchTab(id) {
+            document.querySelectorAll('.tab-content').forEach(t => t.classList.add('hidden'));
+            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+            document.getElementById('tab-' + id).classList.remove('hidden');
+            document.getElementById('nav-' + id).classList.add('active');
+            if(id === 'results') updateTable();
+            document.getElementById('profile-card').classList.add('hidden');
+        }
+
+        function updateTable() {
+            const scores = JSON.parse(localStorage.getItem('scores')) || { javascript: null, python: null, java: null };
+            const body = document.getElementById('scores-table-body');
+            body.innerHTML = Object.keys(scores).map(s => {
+                let score = scores[s];
+                let status = "Not Attempted";
+                let color = "var(--text-light)";
+                if (score !== null) {
+                    if (score > 35) { status = "Passed"; color = "var(--success)"; }
+                    else { status = "Failed"; color = "var(--accent)"; }
+                }
+                return `<tr><td style="text-transform: capitalize;">${s}</td><td>${score !== null ? score + "%" : "-"}</td><td style="color: ${color}; font-weight: 600;">${status}</td></tr>`;
+            }).join('');
+        }
+
+        function initiateExam(sub) {
+            activeSub = sub;
+            activeQuestions = [...examBank[sub]].sort(() => Math.random() - 0.5);
+            document.getElementById('subject-title').innerText = sub.toUpperCase();
+            document.getElementById('system-view').classList.add('hidden');
+            document.getElementById('exam-interface').classList.remove('hidden');
+            
+            document.getElementById('questions-container').innerHTML = activeQuestions.map((q, i) => `
+                <div class="question-card">
+                    <h4>Q${i+1}: ${q.q}</h4>
+                    <div class="options-grid">
+                        ${q.options.sort(() => Math.random() - 0.5).map(opt => `<label class="option-label"><input type="radio" name="q${i}" value="${opt}"> ${opt}</label>`).join('')}
+                    </div>
+                </div>
+            `).join('');
+
+            let time = 600;
+            timer = setInterval(() => {
+                time--;
+                document.getElementById('timer').innerText = `${Math.floor(time/60)}:${time%60 < 10 ? '0' : ''}${time%60}`;
+                if(time <= 0) submitExam();
+            }, 1000);
+        }
+
+        function submitExam() {
+            clearInterval(timer);
+            let scoreCount = 0;
+            activeQuestions.forEach((q, i) => {
+                const choice = document.querySelector(`input[name="q${i}"]:checked`);
+                if(choice && choice.value === q.ans) scoreCount++;
+            });
+            const percent = (scoreCount / 5) * 100;
+            const saved = JSON.parse(localStorage.getItem('scores')) || { javascript: null, python: null, java: null };
+            if (percent > (saved[activeSub] || -1)) saved[activeSub] = percent;
+            localStorage.setItem('scores', JSON.stringify(saved));
+            alert(`${userData.name}, your score for ${activeSub} is: ${percent}%`);
+            document.getElementById('exam-interface').classList.add('hidden');
+            document.getElementById('system-view').classList.remove('hidden');
+            switchTab('results');
+        }
+
+        document.addEventListener('visibilitychange', () => {
+            if(!document.getElementById('exam-interface').classList.contains('hidden') && document.hidden) alert("TAB SWITCH RECORDED!");
+        });
+    </script>
+</body>
+</html>
