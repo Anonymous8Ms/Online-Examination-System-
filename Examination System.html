@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Online Examination System - 2026</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    
+    <link rel="stylesheet" href="style.css">
+</head>
+<body oncontextmenu="return false;">
+
+    <section id="login-view">
+        <ul class="circles"><li></li><li></li><li></li><li></li><li></li></ul>
+        <div class="login-card">
+            <h2 style="color: var(--primary); margin-bottom: 10px;">EduExams Portal</h2>
+            <input type="text" id="student-name" placeholder="Full Name" required>
+            <input type="email" id="email" placeholder="Gmail Address (@gmail.com)" required>
+            <input type="password" id="password" placeholder="Password (8+ chars, A, a, 1)" required>
+            <button class="btn-main" onclick="handleAuth()">Enter Portal</button>
+        </div>
+    </section>
+
+    <section id="system-view" class="dashboard-container hidden">
+        <aside class="sidebar">
+            <div class="logo-area">ExamPro</div>
+            <nav style="display: contents;">
+                <div class="nav-item active" id="nav-home" onclick="switchTab('home')">Home</div>
+                <div class="nav-item" id="nav-dashboard" onclick="switchTab('dashboard')">Dashboard</div>
+                <div class="nav-item" id="nav-results" onclick="switchTab('results')">Results</div>
+            </nav>
+        </aside>
+
+        <main class="main-content">
+            <div id="tab-home" class="tab-content">
+                <div class="card">
+                    <h1>Welcome, <span id="welcome-name"></span>!</h1>
+                    <p style="margin: 15px 0; color: #555; line-height: 1.6;">
+                        Please read the following guidelines before starting your assessment:
+                    </p>
+                    <ul style="margin-left: 20px; line-height: 2; color: #555; margin-bottom: 20px;">
+                        <li>Passing marks: <b>Above 35%</b>.</li>
+                        <li>Proctoring enabled: Tab switching is recorded.</li>
+                        <li>Duration: 10 Minutes per exam.</li>
+                    </ul>
+                    <button class="btn-main" style="width: auto; padding: 12px 35px;" onclick="switchTab('dashboard')">Start Examination</button>
+                </div>
+            </div>
+
+            <div id="tab-dashboard" class="tab-content hidden">
+                <h2 style="margin-bottom: 20px;">Select Subject</h2>
+                <div class="card" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
+                    <div><h3>JavaScript</h3><p>5 Qns | 10 Mins</p></div>
+                    <button class="btn-main" style="width: auto; padding: 10px 25px;" onclick="initiateExam('javascript')">Launch</button>
+                </div>
+                <div class="card" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
+                    <div><h3>Python</h3><p>5 Qns | 10 Mins</p></div>
+                    <button class="btn-main" style="width: auto; padding: 10px 25px;" onclick="initiateExam('python')">Launch</button>
+                </div>
+                <div class="card" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
+                    <div><h3>Java Core</h3><p>5 Qns | 10 Mins</p></div>
+                    <button class="btn-main" style="width: auto; padding: 10px 25px;" onclick="initiateExam('java')">Launch</button>
+                </div>
+            </div>
+
+            <div id="tab-results" class="tab-content hidden">
+                <div class="card" style="overflow-x: auto;">
+                    <h3>My Performance</h3>
+                    <table>
+                        <thead>
+                            <tr><th>Subject</th><th>Best Score</th><th>Status</th></tr>
+                        </thead>
+                        <tbody id="scores-table-body"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="profile-trigger" id="profile-init" onclick="toggleProfile()">?</div>
+            <div id="profile-card" class="profile-popover hidden">
+                <div style="text-align: center; margin-bottom: 15px;">
+                    <h4 id="prof-name" style="color: var(--primary);">User</h4>
+                    <p id="prof-email" style="font-size: 0.8rem; color: #888;">email@gmail.com</p>
+                </div>
+                <button class="btn-main" style="padding: 8px; font-size: 0.8rem;" onclick="location.reload()">Logout</button>
+            </div>
+        </main>
+    </section>
+
+    <div id="exam-interface" class="hidden">
+        <div class="exam-header">
+            <div id="subject-title">EXAM</div>
+            <div class="timer-box" id="timer">10:00</div>
+        </div>
+        <div class="exam-body-container">
+            <div id="questions-container"></div>
+        </div>
+        <div style="padding: 20px; background: #f9f9f9; text-align: right; border-top: 1px solid #eee;">
+            <button class="btn-main" style="width: auto; padding: 12px 50px; background: var(--accent);" onclick="submitExam()">Submit Final</button>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
