@@ -1,3 +1,4 @@
+<style>
 :root {
     --primary: #4e54c8;
     --secondary: #8f94fb;
@@ -135,3 +136,4 @@ th { background-color: #f8f9fa; color: var(--primary); }
     .main-content { padding: 20px; }
     .options-grid { grid-template-columns: 1fr; }
 }
+</style>
