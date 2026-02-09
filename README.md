@@ -42,7 +42,7 @@ JavaScript : Logic, Timer, Authentication, and State Management.
 📂 How to Run the Program
 Since this project uses only frontend technologies, no server or installation is required.
 
-Download the index.html file.
+Download the Examination system.html file.
 
 Right-click the file and select Open with...
 
